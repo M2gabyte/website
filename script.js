@@ -1,10 +1,12 @@
-// Jungian Interpreter - Local LLM powered dream and reflection analysis
-// Uses WebLLM for in-browser AI (no server needed)
+// Jungian Interpreter - Lightweight version using transformers.js
+// Uses smaller model (~200MB) that won't crash
 
-// Import WebLLM (using CDN for simplicity)
-import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
 
-let engine = null;
+// Disable local model loading
+env.allowLocalModels = false;
+
+let generator = null;
 let currentEntry = null;
 let currentInterpretation = null;
 
@@ -24,24 +26,18 @@ const focusArchetypes = document.getElementById('focusArchetypes');
 const focusShadow = document.getElementById('focusShadow');
 const focusSymbols = document.getElementById('focusSymbols');
 
-// Initialize WebLLM
+// Initialize transformers.js with lighter model
 async function initializeModel() {
     try {
-        statusText.textContent = 'Loading model (first time will download ~1-2GB)...';
+        statusText.textContent = 'Loading model (downloading ~200MB, first time only)...';
 
-        engine = await webllm.CreateMLCEngine(
-            "Llama-3.1-8B-Instruct-q4f32_1-MLC",
-            {
-                initProgressCallback: (progress) => {
-                    statusText.textContent = `Loading: ${Math.round(progress.progress * 100)}%`;
-                }
-            }
-        );
+        // Use Flan-T5 small model - good balance of size and quality
+        generator = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-248M');
 
         statusText.textContent = 'Model ready';
         statusEl.classList.add('ready');
         interpretBtn.disabled = false;
-        modelNameSpan.textContent = 'Llama 3.1 8B (Local)';
+        modelNameSpan.textContent = 'LaMini-Flan-T5 248M (Local)';
 
     } catch (error) {
         console.error('Failed to initialize model:', error);
@@ -49,25 +45,22 @@ async function initializeModel() {
     }
 }
 
-// Build Jungian prompt based on options
+// Build Jungian prompt
 function buildPrompt(text) {
-    let systemPrompt = `You are a Jungian analyst. Provide thoughtful interpretation of dreams and reflections through the lens of Jungian psychology.`;
+    let prompt = `Analyze this dream or reflection using Jungian psychology. `;
 
     let focusAreas = [];
-    if (focusArchetypes.checked) focusAreas.push('archetypal patterns');
-    if (focusShadow.checked) focusAreas.push('shadow aspects');
-    if (focusSymbols.checked) focusAreas.push('symbolic meanings');
+    if (focusArchetypes.checked) focusAreas.push('identify archetypal patterns (Hero, Shadow, Anima/Animus, Wise Old Man, etc.)');
+    if (focusShadow.checked) focusAreas.push('explore shadow aspects and repressed elements');
+    if (focusSymbols.checked) focusAreas.push('decode symbolic meanings from the collective unconscious');
 
     if (focusAreas.length > 0) {
-        systemPrompt += ` Focus particularly on ${focusAreas.join(', ')}.`;
+        prompt += `Focus on: ${focusAreas.join(', ')}. `;
     }
 
-    systemPrompt += ` Be specific, insightful, and avoid generic interpretations. Limit response to 200-300 words.`;
+    prompt += `Provide specific, insightful interpretation in 150-200 words.\n\nDream/Reflection: ${text}\n\nJungian Analysis:`;
 
-    return [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Please analyze this dream/reflection from a Jungian perspective:\n\n${text}` }
-    ];
+    return prompt;
 }
 
 // Interpret button handler
@@ -79,7 +72,7 @@ interpretBtn.addEventListener('click', async () => {
         return;
     }
 
-    if (!engine) {
+    if (!generator) {
         alert('Model not ready yet. Please wait.');
         return;
     }
@@ -87,33 +80,26 @@ interpretBtn.addEventListener('click', async () => {
     // Disable button and show loading
     interpretBtn.disabled = true;
     interpretBtn.textContent = 'Interpreting...';
-    interpretationDiv.textContent = '';
+    interpretationDiv.textContent = 'Analyzing...';
     outputSection.style.display = 'block';
 
     try {
         currentEntry = text;
-        const messages = buildPrompt(text);
+        const prompt = buildPrompt(text);
 
-        // Stream response
-        let fullResponse = '';
-
-        const completion = await engine.chat.completions.create({
-            messages: messages,
-            stream: true,
+        // Generate interpretation
+        const result = await generator(prompt, {
+            max_new_tokens: 300,
             temperature: 0.7,
-            max_tokens: 400
+            do_sample: true,
+            top_p: 0.9
         });
 
-        for await (const chunk of completion) {
-            const content = chunk.choices[0]?.delta?.content || '';
-            fullResponse += content;
-            interpretationDiv.textContent = fullResponse;
+        const interpretation = result[0].generated_text.trim();
+        currentInterpretation = interpretation;
 
-            // Auto scroll
-            interpretationDiv.scrollTop = interpretationDiv.scrollHeight;
-        }
-
-        currentInterpretation = fullResponse;
+        // Type out the response for nice effect
+        await typeWriter(interpretationDiv, interpretation, 20);
 
     } catch (error) {
         console.error('Interpretation error:', error);
@@ -123,6 +109,16 @@ interpretBtn.addEventListener('click', async () => {
         interpretBtn.textContent = 'Interpret';
     }
 });
+
+// Typewriter effect
+async function typeWriter(element, text, speed = 30) {
+    element.textContent = '';
+    for (let i = 0; i < text.length; i++) {
+        element.textContent += text.charAt(i);
+        element.scrollTop = element.scrollHeight;
+        await new Promise(resolve => setTimeout(resolve, speed));
+    }
+}
 
 // Save to journal
 saveBtn.addEventListener('click', () => {
