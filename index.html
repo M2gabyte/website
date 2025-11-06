@@ -3,11 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Jungian Interpreter</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <script src="script.js"></script>
+    <div class="container">
+        <header>
+            <h1>Jungian Interpreter</h1>
+            <p class="subtitle">Explore your unconscious through dreams and reflections</p>
+        </header>
+
+        <div class="status" id="status">
+            <span class="status-indicator"></span>
+            <span id="statusText">Initializing...</span>
+        </div>
+
+        <main>
+            <div class="input-section">
+                <label for="entry">Dream or Reflection</label>
+                <textarea
+                    id="entry"
+                    placeholder="Describe your dream, thought, or experience..."
+                    rows="8"
+                ></textarea>
+
+                <div class="options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="focusArchetypes">
+                        <span>Focus on Archetypes</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="focusShadow">
+                        <span>Shadow Work</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="focusSymbols">
+                        <span>Symbol Analysis</span>
+                    </label>
+                </div>
+
+                <button id="interpretBtn" class="btn-primary" disabled>
+                    Interpret
+                </button>
+            </div>
+
+            <div class="output-section" id="outputSection" style="display: none;">
+                <h2>Analysis</h2>
+                <div id="interpretation" class="interpretation"></div>
+
+                <button id="saveBtn" class="btn-secondary">
+                    Save to Journal
+                </button>
+            </div>
+
+            <div class="journal-section">
+                <h2>Past Entries</h2>
+                <div id="journalList" class="journal-list">
+                    <p class="empty-state">No entries yet. Your interpretations will appear here.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Runs locally in your browser. Nothing is sent to any server.</p>
+            <p class="model-info">Using <span id="modelName">WebLLM</span></p>
+        </footer>
+    </div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
