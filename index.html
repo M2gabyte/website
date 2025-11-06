@@ -3,70 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jungian Interpreter</title>
+    <title>Calm</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Jungian Interpreter</h1>
-            <p class="subtitle">Explore your unconscious through dreams and reflections</p>
+            <h1>Take a breath</h1>
+            <p class="subtitle">Let's examine that thought together</p>
         </header>
 
         <div class="status" id="status">
             <span class="status-indicator"></span>
-            <span id="statusText">Initializing...</span>
+            <span id="statusText">Loading...</span>
         </div>
 
         <main>
             <div class="input-section">
-                <label for="entry">Dream or Reflection</label>
+                <label for="worry">What's worrying you?</label>
                 <textarea
-                    id="entry"
-                    placeholder="Describe your dream, thought, or experience..."
-                    rows="8"
+                    id="worry"
+                    placeholder="I'm worried that..."
+                    rows="6"
                 ></textarea>
 
-                <div class="options">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="focusArchetypes">
-                        <span>Focus on Archetypes</span>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="focusShadow">
-                        <span>Shadow Work</span>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="focusSymbols">
-                        <span>Symbol Analysis</span>
-                    </label>
-                </div>
-
-                <button id="interpretBtn" class="btn-primary" disabled>
-                    Interpret
+                <button id="analyzeBtn" class="btn-primary" disabled>
+                    Help me see this clearly
                 </button>
             </div>
 
             <div class="output-section" id="outputSection" style="display: none;">
-                <h2>Analysis</h2>
-                <div id="interpretation" class="interpretation"></div>
+                <div class="distortion-badge" id="distortionBadge"></div>
+
+                <div class="response-card">
+                    <h3>Let's reframe this</h3>
+                    <div id="response" class="response-text"></div>
+                </div>
 
                 <button id="saveBtn" class="btn-secondary">
-                    Save to Journal
+                    Save this reframe
                 </button>
             </div>
 
             <div class="journal-section">
-                <h2>Past Entries</h2>
+                <h2>Your Progress</h2>
                 <div id="journalList" class="journal-list">
-                    <p class="empty-state">No entries yet. Your interpretations will appear here.</p>
+                    <p class="empty-state">Your reframed thoughts will appear here</p>
                 </div>
             </div>
         </main>
 
         <footer>
-            <p>Runs locally in your browser. Nothing is sent to any server.</p>
-            <p class="model-info">Using <span id="modelName">WebLLM</span></p>
+            <p>Everything stays on your device. Take your time.</p>
         </footer>
     </div>
 

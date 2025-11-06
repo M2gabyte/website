@@ -1,117 +1,137 @@
-// Jungian Interpreter - Lightweight version using transformers.js
-// Uses smaller model (~200MB) that won't crash
+// CBT Worry Helper - Lightweight local AI for cognitive reframing
+// Uses transformers.js with small model (~200MB)
 
 import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
 
-// Disable local model loading
 env.allowLocalModels = false;
 
 let generator = null;
-let currentEntry = null;
-let currentInterpretation = null;
+let currentWorry = null;
+let currentResponse = null;
+let currentDistortion = null;
 
 // DOM Elements
 const statusEl = document.getElementById('status');
 const statusText = document.getElementById('statusText');
-const entryTextarea = document.getElementById('entry');
-const interpretBtn = document.getElementById('interpretBtn');
+const worryTextarea = document.getElementById('worry');
+const analyzeBtn = document.getElementById('analyzeBtn');
 const outputSection = document.getElementById('outputSection');
-const interpretationDiv = document.getElementById('interpretation');
+const responseDiv = document.getElementById('response');
+const distortionBadge = document.getElementById('distortionBadge');
 const saveBtn = document.getElementById('saveBtn');
 const journalList = document.getElementById('journalList');
-const modelNameSpan = document.getElementById('modelName');
 
-// Focus options
-const focusArchetypes = document.getElementById('focusArchetypes');
-const focusShadow = document.getElementById('focusShadow');
-const focusSymbols = document.getElementById('focusSymbols');
-
-// Initialize transformers.js with lighter model
+// Initialize model
 async function initializeModel() {
     try {
-        statusText.textContent = 'Loading model (downloading ~200MB, first time only)...';
+        statusText.textContent = 'Loading (first time downloads ~200MB)...';
 
-        // Use Flan-T5 small model - good balance of size and quality
         generator = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-248M');
 
-        statusText.textContent = 'Model ready';
+        statusText.textContent = 'Ready when you are';
         statusEl.classList.add('ready');
-        interpretBtn.disabled = false;
-        modelNameSpan.textContent = 'LaMini-Flan-T5 248M (Local)';
+        analyzeBtn.disabled = false;
 
     } catch (error) {
-        console.error('Failed to initialize model:', error);
-        statusText.textContent = 'Error loading model. Check console.';
+        console.error('Failed to load:', error);
+        statusText.textContent = 'Error loading. Please refresh.';
     }
 }
 
-// Build Jungian prompt
-function buildPrompt(text) {
-    let prompt = `Analyze this dream or reflection using Jungian psychology. `;
+// Common cognitive distortions
+const distortions = [
+    'Catastrophizing',
+    'All-or-Nothing Thinking',
+    'Overgeneralization',
+    'Mind Reading',
+    'Fortune Telling',
+    'Emotional Reasoning',
+    'Should Statements',
+    'Labeling',
+    'Personalization'
+];
 
-    let focusAreas = [];
-    if (focusArchetypes.checked) focusAreas.push('identify archetypal patterns (Hero, Shadow, Anima/Animus, Wise Old Man, etc.)');
-    if (focusShadow.checked) focusAreas.push('explore shadow aspects and repressed elements');
-    if (focusSymbols.checked) focusAreas.push('decode symbolic meanings from the collective unconscious');
+// Build CBT prompt
+function buildPrompt(worry) {
+    const prompt = `You are a kind CBT therapist. A person shares this worry: "${worry}"
 
-    if (focusAreas.length > 0) {
-        prompt += `Focus on: ${focusAreas.join(', ')}. `;
-    }
+Your task:
+1. Identify the main cognitive distortion (catastrophizing, all-or-nothing thinking, overgeneralization, mind reading, fortune telling, emotional reasoning, should statements, labeling, or personalization)
+2. Gently challenge the thought
+3. Offer a balanced, realistic reframe
 
-    prompt += `Provide specific, insightful interpretation in 150-200 words.\n\nDream/Reflection: ${text}\n\nJungian Analysis:`;
+Format your response as:
+Distortion: [name]
+Reframe: [2-3 compassionate sentences offering a balanced perspective]
+
+Response:`;
 
     return prompt;
 }
 
-// Interpret button handler
-interpretBtn.addEventListener('click', async () => {
-    const text = entryTextarea.value.trim();
+// Analyze button
+analyzeBtn.addEventListener('click', async () => {
+    const worry = worryTextarea.value.trim();
 
-    if (!text) {
-        alert('Please enter a dream or reflection to interpret.');
+    if (!worry) {
+        alert('Please share what\'s worrying you');
         return;
     }
 
     if (!generator) {
-        alert('Model not ready yet. Please wait.');
+        alert('Model not ready. Please wait a moment.');
         return;
     }
 
-    // Disable button and show loading
-    interpretBtn.disabled = true;
-    interpretBtn.textContent = 'Interpreting...';
-    interpretationDiv.textContent = 'Analyzing...';
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = 'Thinking...';
+    responseDiv.textContent = '';
     outputSection.style.display = 'block';
+    distortionBadge.textContent = 'Analyzing...';
 
     try {
-        currentEntry = text;
-        const prompt = buildPrompt(text);
+        currentWorry = worry;
+        const prompt = buildPrompt(worry);
 
-        // Generate interpretation
         const result = await generator(prompt, {
-            max_new_tokens: 300,
+            max_new_tokens: 250,
             temperature: 0.7,
             do_sample: true,
             top_p: 0.9
         });
 
-        const interpretation = result[0].generated_text.trim();
-        currentInterpretation = interpretation;
+        const fullResponse = result[0].generated_text.trim();
 
-        // Type out the response for nice effect
-        await typeWriter(interpretationDiv, interpretation, 20);
+        // Parse response
+        const distortionMatch = fullResponse.match(/Distortion:\s*(.+)/i);
+        const reframeMatch = fullResponse.match(/Reframe:\s*(.+)/is);
+
+        if (distortionMatch && reframeMatch) {
+            currentDistortion = distortionMatch[1].trim();
+            currentResponse = reframeMatch[1].trim();
+        } else {
+            // Fallback if parsing fails
+            currentDistortion = 'Cognitive Distortion';
+            currentResponse = fullResponse;
+        }
+
+        distortionBadge.textContent = currentDistortion;
+
+        // Type out the reframe
+        await typeWriter(responseDiv, currentResponse, 15);
 
     } catch (error) {
-        console.error('Interpretation error:', error);
-        interpretationDiv.textContent = 'Error generating interpretation. Please try again.';
+        console.error('Error:', error);
+        responseDiv.textContent = 'Something went wrong. Please try again.';
+        distortionBadge.textContent = '';
     } finally {
-        interpretBtn.disabled = false;
-        interpretBtn.textContent = 'Interpret';
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = 'Help me see this clearly';
     }
 });
 
 // Typewriter effect
-async function typeWriter(element, text, speed = 30) {
+async function typeWriter(element, text, speed = 15) {
     element.textContent = '';
     for (let i = 0; i < text.length; i++) {
         element.textContent += text.charAt(i);
@@ -122,62 +142,57 @@ async function typeWriter(element, text, speed = 30) {
 
 // Save to journal
 saveBtn.addEventListener('click', () => {
-    if (!currentEntry || !currentInterpretation) {
+    if (!currentWorry || !currentResponse) {
         return;
     }
 
     const entry = {
         id: Date.now(),
         date: new Date().toISOString(),
-        text: currentEntry,
-        interpretation: currentInterpretation,
-        options: {
-            archetypes: focusArchetypes.checked,
-            shadow: focusShadow.checked,
-            symbols: focusSymbols.checked
-        }
+        worry: currentWorry,
+        distortion: currentDistortion,
+        response: currentResponse
     };
 
-    // Save to localStorage
     const journal = getJournal();
     journal.unshift(entry);
-    localStorage.setItem('jungian-journal', JSON.stringify(journal));
+    localStorage.setItem('cbt-journal', JSON.stringify(journal));
 
-    // Refresh display
     displayJournal();
 
-    // Clear form
-    entryTextarea.value = '';
+    worryTextarea.value = '';
     outputSection.style.display = 'none';
-    currentEntry = null;
-    currentInterpretation = null;
+    currentWorry = null;
+    currentResponse = null;
+    currentDistortion = null;
 
-    alert('Entry saved to journal!');
+    // Smooth scroll to journal
+    document.querySelector('.journal-section').scrollIntoView({ behavior: 'smooth' });
 });
 
-// Get journal from localStorage
+// Get journal
 function getJournal() {
-    const stored = localStorage.getItem('jungian-journal');
+    const stored = localStorage.getItem('cbt-journal');
     return stored ? JSON.parse(stored) : [];
 }
 
-// Display journal entries
+// Display journal
 function displayJournal() {
     const journal = getJournal();
 
     if (journal.length === 0) {
-        journalList.innerHTML = '<p class="empty-state">No entries yet. Your interpretations will appear here.</p>';
+        journalList.innerHTML = '<p class="empty-state">Your reframed thoughts will appear here</p>';
         return;
     }
 
     journalList.innerHTML = journal.map(entry => `
         <div class="journal-entry">
             <div class="journal-entry-header">
-                <span class="journal-entry-date">${new Date(entry.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                <span class="journal-entry-date">${new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                 <button class="journal-entry-delete" onclick="deleteEntry(${entry.id})">Delete</button>
             </div>
-            <div class="journal-entry-text">"${entry.text.substring(0, 150)}${entry.text.length > 150 ? '...' : ''}"</div>
-            <div class="journal-entry-interpretation">${entry.interpretation}</div>
+            <div class="journal-entry-worry">"${entry.worry}"</div>
+            <div class="journal-entry-response">${entry.response}</div>
         </div>
     `).join('');
 }
@@ -188,11 +203,11 @@ window.deleteEntry = function(id) {
 
     let journal = getJournal();
     journal = journal.filter(e => e.id !== id);
-    localStorage.setItem('jungian-journal', JSON.stringify(journal));
+    localStorage.setItem('cbt-journal', JSON.stringify(journal));
     displayJournal();
 };
 
-// Initialize on load
+// Init
 window.addEventListener('load', () => {
     displayJournal();
     initializeModel();
