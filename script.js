@@ -3,196 +3,122 @@ const ctx = canvas.getContext('2d');
 
 let width = window.innerWidth;
 let height = window.innerHeight;
-let particles = [];
-let particleCount = 800;
-let mouse = { x: null, y: null, radius: 150 };
 let time = 0;
 
-// Set canvas size
-canvas.width = width;
-canvas.height = height;
+canvas.width = width * window.devicePixelRatio;
+canvas.height = height * window.devicePixelRatio;
+canvas.style.width = width + 'px';
+canvas.style.height = height + 'px';
+ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-// Particle class
-class Particle {
-    constructor() {
-        this.reset();
-        this.y = Math.random() * height;
+// Large blob class
+class Blob {
+    constructor(x, y, radius, color) {
+        this.x = x;
+        this.y = y;
+        this.baseX = x;
+        this.baseY = y;
+        this.radius = radius;
+        this.baseRadius = radius;
+        this.color = color;
+        this.offsetX = Math.random() * Math.PI * 2;
+        this.offsetY = Math.random() * Math.PI * 2;
+        this.offsetRadius = Math.random() * Math.PI * 2;
     }
 
-    reset() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.size = Math.random() * 2 + 0.5;
-        this.baseX = this.x;
-        this.baseY = this.y;
-        this.density = Math.random() * 40 + 5;
-        this.distance = 0;
-
-        // Flow properties
-        this.angle = Math.random() * Math.PI * 2;
-        this.speed = Math.random() * 0.5 + 0.1;
-        this.velocityX = 0;
-        this.velocityY = 0;
-
-        // Color variation
-        this.hue = Math.random() * 60 + 180; // Blue to cyan range
-        this.alpha = Math.random() * 0.5 + 0.3;
-    }
-
-    update() {
-        // Calculate flow field based on position and time
-        const flowX = Math.sin(this.x * 0.005 + time * 0.5) * Math.cos(this.y * 0.005);
-        const flowY = Math.cos(this.x * 0.005) * Math.sin(this.y * 0.005 + time * 0.5);
-
-        // Apply flow field
-        this.velocityX += flowX * 0.05;
-        this.velocityY += flowY * 0.05;
-
-        // Mouse interaction
-        if (mouse.x !== null && mouse.y !== null) {
-            const dx = mouse.x - this.x;
-            const dy = mouse.y - this.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const forceDirectionX = dx / distance;
-            const forceDirectionY = dy / distance;
-            const maxDistance = mouse.radius;
-            const force = (maxDistance - distance) / maxDistance;
-
-            if (distance < mouse.radius) {
-                this.velocityX -= forceDirectionX * force * 3;
-                this.velocityY -= forceDirectionY * force * 3;
-            }
-        }
-
-        // Apply velocity with damping
-        this.velocityX *= 0.95;
-        this.velocityY *= 0.95;
-
-        this.x += this.velocityX;
-        this.y += this.velocityY;
-
-        // Wrap around edges
-        if (this.x < 0) this.x = width;
-        if (this.x > width) this.x = 0;
-        if (this.y < 0) this.y = height;
-        if (this.y > height) this.y = 0;
+    update(time) {
+        // Very slow, organic movement
+        this.x = this.baseX + Math.sin(time * 0.0003 + this.offsetX) * 200;
+        this.y = this.baseY + Math.cos(time * 0.0004 + this.offsetY) * 150;
+        this.radius = this.baseRadius + Math.sin(time * 0.0002 + this.offsetRadius) * 50;
     }
 
     draw() {
-        ctx.fillStyle = `hsla(${this.hue}, 70%, 60%, ${this.alpha})`;
+        const gradient = ctx.createRadialGradient(
+            this.x, this.y, 0,
+            this.x, this.y, this.radius
+        );
+
+        gradient.addColorStop(0, this.color.inner);
+        gradient.addColorStop(0.5, this.color.mid);
+        gradient.addColorStop(1, this.color.outer);
+
+        ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
     }
 }
 
-// Initialize particles
-function init() {
-    particles = [];
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-    }
-}
-
-// Connect nearby particles
-function connect() {
-    for (let a = 0; a < particles.length; a++) {
-        for (let b = a + 1; b < particles.length; b++) {
-            const dx = particles[a].x - particles[b].x;
-            const dy = particles[a].y - particles[b].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < 120) {
-                const opacity = (1 - distance / 120) * 0.3;
-                ctx.strokeStyle = `hsla(${particles[a].hue}, 70%, 60%, ${opacity})`;
-                ctx.lineWidth = 0.5;
-                ctx.beginPath();
-                ctx.moveTo(particles[a].x, particles[a].y);
-                ctx.lineTo(particles[b].x, particles[b].y);
-                ctx.stroke();
-            }
+// Create blobs with cinematic colors
+const blobs = [
+    new Blob(
+        width * 0.3,
+        height * 0.4,
+        300,
+        {
+            inner: 'rgba(255, 120, 80, 0.6)',
+            mid: 'rgba(255, 90, 120, 0.4)',
+            outer: 'rgba(120, 60, 100, 0)'
         }
-    }
-}
-
-// Draw wave patterns in background
-function drawWaves() {
-    ctx.strokeStyle = 'rgba(100, 150, 255, 0.05)';
-    ctx.lineWidth = 1;
-
-    for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        for (let x = 0; x < width; x += 5) {
-            const y = height / 2 +
-                     Math.sin(x * 0.01 + time + i * 0.5) * 50 * (i + 1) +
-                     Math.cos(x * 0.005 + time * 0.5) * 30;
-
-            if (x === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
+    ),
+    new Blob(
+        width * 0.7,
+        height * 0.6,
+        350,
+        {
+            inner: 'rgba(80, 160, 200, 0.5)',
+            mid: 'rgba(100, 120, 180, 0.3)',
+            outer: 'rgba(60, 80, 120, 0)'
         }
-        ctx.stroke();
-    }
-}
+    ),
+    new Blob(
+        width * 0.5,
+        height * 0.5,
+        250,
+        {
+            inner: 'rgba(200, 140, 160, 0.4)',
+            mid: 'rgba(160, 100, 140, 0.2)',
+            outer: 'rgba(100, 60, 80, 0)'
+        }
+    )
+];
 
-// Animation loop
 function animate() {
-    // Fade effect instead of clear
-    ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+    // Clear with slight fade for smooth blending
+    ctx.fillStyle = 'rgba(13, 13, 13, 0.03)';
     ctx.fillRect(0, 0, width, height);
 
-    // Draw background waves
-    drawWaves();
+    // Enable compositing for smooth blending
+    ctx.globalCompositeOperation = 'screen';
 
-    // Update and draw particles
-    particles.forEach(particle => {
-        particle.update();
-        particle.draw();
+    blobs.forEach(blob => {
+        blob.update(time);
+        blob.draw();
     });
 
-    // Connect particles
-    connect();
+    ctx.globalCompositeOperation = 'source-over';
 
-    // Update time
-    time += 0.01;
-
+    time += 16; // Very slow time progression
     requestAnimationFrame(animate);
 }
 
-// Mouse move event
-canvas.addEventListener('mousemove', (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-});
-
-canvas.addEventListener('mouseleave', () => {
-    mouse.x = null;
-    mouse.y = null;
-});
-
-// Touch events for mobile
-canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    mouse.x = e.touches[0].clientX;
-    mouse.y = e.touches[0].clientY;
-});
-
-canvas.addEventListener('touchend', () => {
-    mouse.x = null;
-    mouse.y = null;
-});
-
-// Handle resize
 window.addEventListener('resize', () => {
     width = window.innerWidth;
     height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-    init();
+    canvas.width = width * window.devicePixelRatio;
+    canvas.height = height * window.devicePixelRatio;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+    // Reposition blobs
+    blobs[0].baseX = width * 0.3;
+    blobs[0].baseY = height * 0.4;
+    blobs[1].baseX = width * 0.7;
+    blobs[1].baseY = height * 0.6;
+    blobs[2].baseX = width * 0.5;
+    blobs[2].baseY = height * 0.5;
 });
 
-// Start
-init();
 animate();
