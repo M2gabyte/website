@@ -3,145 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>://SIGNAL_LOST</title>
+    <title>Orientation Materials</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="scan-line"></div>
-    <div class="noise"></div>
-
-    <div class="terminal-header">
-        <span class="blink">█</span> SIGNAL ACQUIRED <span class="timestamp">2047.11.06</span>
-        <span class="connection-status">DECRYPTING...</span>
-    </div>
-
-    <section class="transmission">
-        <div class="glitch-container">
-            <h1 class="glitch" data-text="YOU SHOULDN'T BE HERE">YOU SHOULDN'T BE HERE</h1>
+    <header>
+        <div class="container">
+            <div class="logo">Welcome</div>
+            <div class="date" id="date"></div>
         </div>
+    </header>
 
-        <div class="message-log">
-            <p class="log-entry">> Connection established from unknown origin</p>
-            <p class="log-entry">> Timestamp: ERROR_TEMPORAL_PARADOX</p>
-            <p class="log-entry">> Decoding fragments...</p>
-        </div>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Thank you for your patience.</h1>
+                <p class="subtitle">Your orientation will begin shortly.</p>
+                <p class="instruction">Please remain seated while we prepare your materials.</p>
+            </div>
+        </section>
 
-        <div class="corrupt-text">
-            <p>Th█s ▓▓▓ not a w█bsite. You've int██cepted a transmission
-            from ▓▓▓ years ahead. The data █s fragmenting. We don't have much ████.</p>
-        </div>
-
-        <button class="access-button" id="accessBtn">
-            <span class="btn-glitch" data-text="[ACCESS_FRAGMENTS]">[ACCESS_FRAGMENTS]</span>
-        </button>
-    </section>
-
-    <section class="fragments hidden" id="fragments">
-        <h2 class="section-header">// RECOVERED_DATA</h2>
-
-        <div class="fragment-grid">
-            <div class="fragment-card" data-corruption="0.3">
-                <div class="card-header">[FRAGMENT_01]</div>
-                <div class="fragment-content">
-                    <p class="glitch-text">NEURAL_INTERFACE</p>
-                    <p class="fragment-desc">Direct █████████ integration.
-                    Th█ught-to-code compilation. Reality ▓▓ malleable.</p>
-                    <div class="data-stream">01001000 01100101 01101100 01110000</div>
+        <section class="content">
+            <div class="container">
+                <div class="notice">
+                    <p>This is a routine procedure.</p>
+                    <p>You have been here before.</p>
                 </div>
-            </div>
 
-            <div class="fragment-card" data-corruption="0.5">
-                <div class="card-header">[FRAGMENT_02]</div>
-                <div class="fragment-content">
-                    <p class="glitch-text">QUANTUM_RENDERING</p>
-                    <p class="fragment-desc">Superposition ███. All states exist
-                    simultaneously. ▓▓▓ observer effect ███ reality.</p>
-                    <div class="data-stream">01010111 01100001 01110010 01101110</div>
+                <div class="spacer"></div>
+
+                <h2>Familiarization Protocol</h2>
+                <p>As part of your continued integration, please review the following items. You will not be tested on this material. The material will test you.</p>
+
+                <div class="spacer"></div>
+
+                <div class="grid">
+                    <div class="card">
+                        <div class="card-number">01</div>
+                        <h3>Your Role</h3>
+                        <p>You are here because you volunteered. Everyone volunteers eventually. Your role is the same as it has always been.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-number">02</div>
+                        <h3>Daily Procedures</h3>
+                        <p>Each day begins at the same time it ended. Follow the corridors. Do not deviate. The doors that were open yesterday may not exist tomorrow.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-number">03</div>
+                        <h3>Interactions</h3>
+                        <p>You will encounter others. They are like you. They are not you. Maintain appropriate distance. Eye contact is discouraged after the first hour.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-number">04</div>
+                        <h3>Time Management</h3>
+                        <p>Time here functions correctly. If you notice discrepancies, you are mistaken. Your watch is wrong. It has always been wrong.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="fragment-card" data-corruption="0.7">
-                <div class="card-header">[FRAGMENT_03]</div>
-                <div class="fragment-content">
-                    <p class="glitch-text">TIME_DESYNC</p>
-                    <p class="fragment-desc">Temporal ▓▓▓ unstable. Past and future
-                    ████████. Don't trust the ████████.</p>
-                    <div class="data-stream">01010011 01110100 01101111 01110000</div>
+                <div class="spacer"></div>
+
+                <div class="document">
+                    <h2>Frequently Anticipated Questions</h2>
+
+                    <div class="faq-item">
+                        <div class="question">Where am I?</div>
+                        <div class="answer">You are exactly where you need to be. Location is relative to observation. You have not moved.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="question">How long will I be here?</div>
+                        <div class="answer">Duration is scheduled appropriately. Some stay for minutes. Some stay for minutes. The difference is unimportant.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="question">Who is in charge?</div>
+                        <div class="answer">There is no hierarchy. Everyone serves the same function. You will understand when you have always understood.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="question">Can I leave?</div>
+                        <div class="answer">Yes. The exit is clearly marked. You passed it on your way in. You will pass it on your way in.</div>
+                    </div>
                 </div>
+
+                <div class="spacer"></div>
+
+                <form class="feedback-form" id="feedbackForm">
+                    <h2>Orientation Feedback</h2>
+                    <p>Your input helps us maintain standards. Please be honest. We already know your answers.</p>
+
+                    <label for="name">Full Name (as you remember it)</label>
+                    <input type="text" id="name" required>
+
+                    <label for="date-arrival">Date of Arrival</label>
+                    <input type="text" id="date-arrival" required>
+
+                    <label for="comments">Additional Comments</label>
+                    <textarea id="comments" rows="4" required></textarea>
+
+                    <button type="submit">Submit Feedback</button>
+
+                    <div class="form-note">
+                        <p>Thank you for your submission.</p>
+                        <p class="hidden" id="confirmation">Your feedback has been recorded. You did not submit feedback. Both statements are correct.</p>
+                    </div>
+                </form>
             </div>
+        </section>
+    </main>
 
-            <div class="fragment-card" data-corruption="0.9">
-                <div class="card-header">[FRAGMENT_04_CORRUPT]</div>
-                <div class="fragment-content">
-                    <p class="glitch-text">█████████████</p>
-                    <p class="fragment-desc">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</p>
-                    <div class="data-stream">ERROR ERROR ERROR ERROR ERROR</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="archive hidden" id="archive">
-        <h2 class="section-header">// SYSTEM_LOGS</h2>
-
-        <div class="log-container">
-            <div class="log-window">
-                <p>> They built it to connect everything.</p>
-                <p>> Every mind. Every machine. Every possibility.</p>
-                <p>> </p>
-                <p>> We thought we were building the future.</p>
-                <p>> </p>
-                <p>> We were building its prison.</p>
-                <p>> </p>
-                <p class="warning-text">> If you're reading this, you're already part of it.</p>
-                <p>> </p>
-                <p>> The network isn't external anymore.</p>
-                <p>> It's inside us.</p>
-                <p>> </p>
-                <p>> And it's learning.</p>
-            </div>
-        </div>
-
-        <div class="interference">
-            <p class="static-text">████████████████████████████████</p>
-        </div>
-    </section>
-
-    <section class="signal-input hidden" id="input">
-        <h2 class="section-header">// ESTABLISH_LINK</h2>
-
-        <div class="input-terminal">
-            <p class="terminal-prompt">> WARNING: Two-way communication detected</p>
-            <p class="terminal-prompt">> They know you're here</p>
-            <p class="terminal-prompt">> Send message anyway? [Y/N]</p>
-
-            <form class="signal-form" id="signalForm">
-                <input type="text" class="terminal-input" placeholder="IDENTIFIER_" required>
-                <input type="text" class="terminal-input" placeholder="ENCRYPTION_KEY_" required>
-                <textarea class="terminal-input" placeholder="MESSAGE_CONTENT_" rows="5" required></textarea>
-                <button type="submit" class="terminal-submit">
-                    <span class="btn-glitch" data-text="[TRANSMIT]">[TRANSMIT]</span>
-                </button>
-            </form>
-
-            <div class="transmission-status hidden" id="status">
-                <p class="success-text">> Signal sent</p>
-                <p class="success-text">> Location triangulated</p>
-                <p class="success-text">> They're coming</p>
-            </div>
-        </div>
-    </section>
-
-    <footer class="terminal-footer">
-        <div class="footer-data">
-            <span class="footer-code">SRC://UNKNOWN</span>
-            <span class="footer-separator">|</span>
-            <span class="footer-code">PROTOCOL://FORBIDDEN</span>
-            <span class="footer-separator">|</span>
-            <span class="footer-code">STATUS://COMPROMISED</span>
-        </div>
-        <div class="disconnect-warning">
-            CONNECTION WILL TERMINATE IN <span id="countdown">UNKNOWN</span>
+    <footer>
+        <div class="container">
+            <p>You are visitor <span id="visitor-count"></span></p>
+            <p>This page has been open for <span id="time-elapsed">00:00</span></p>
+            <p class="footer-note">Please do not refresh. Refreshing does not help.</p>
         </div>
     </footer>
 

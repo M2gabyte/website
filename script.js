@@ -1,314 +1,266 @@
-// Random glitch text corruption
-function corruptText(element, intensity = 0.3) {
-    const originalText = element.textContent;
-    const glitchChars = ['█', '▓', '▒', '░', '▀', '▄', '■', '□', '▪', '▫'];
+// Date that's slightly wrong
+function setDate() {
+    const dateEl = document.getElementById('date');
+    const now = new Date();
 
-    let corruptedText = '';
-    for (let char of originalText) {
-        if (Math.random() < intensity && char !== ' ') {
-            corruptedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+    // Show a date that's close but wrong
+    const wrongDate = new Date(now.getTime() - (Math.random() * 86400000 * 3));
+    const formatted = wrongDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    dateEl.textContent = formatted;
+}
+
+// Visitor count that changes inconsistently
+function updateVisitorCount() {
+    const countEl = document.getElementById('visitor-count');
+    let count = Math.floor(Math.random() * 900) + 100;
+
+    countEl.textContent = count;
+
+    // Randomly update it
+    setInterval(() => {
+        const change = Math.random() < 0.5 ? -1 : 1;
+        count += change * Math.floor(Math.random() * 3);
+        if (count < 50) count = 50;
+        countEl.textContent = count;
+    }, 8000 + Math.random() * 12000);
+}
+
+// Time elapsed that doesn't match reality
+function updateTimeElapsed() {
+    const timeEl = document.getElementById('time-elapsed');
+    let seconds = 0;
+    let minutes = 0;
+
+    setInterval(() => {
+        // Sometimes time skips or goes backward
+        const rand = Math.random();
+        if (rand < 0.85) {
+            seconds++;
+        } else if (rand < 0.95) {
+            seconds += 2; // Skip forward
         } else {
-            corruptedText += char;
+            seconds = Math.max(0, seconds - 1); // Go backward
         }
-    }
 
-    element.textContent = corruptedText;
+        if (seconds >= 60) {
+            minutes++;
+            seconds = 0;
+        }
 
-    // Restore original text after a moment
-    setTimeout(() => {
-        element.textContent = originalText;
-    }, 100);
+        const secStr = String(seconds).padStart(2, '0');
+        const minStr = String(minutes).padStart(2, '0');
+        timeEl.textContent = `${minStr}:${secStr}`;
+    }, 1000);
 }
 
-// Apply corruption to fragment cards based on their data attribute
-function initFragmentCorruption() {
-    const fragments = document.querySelectorAll('.fragment-card');
+// Form submission
+const form = document.getElementById('feedbackForm');
+const confirmation = document.getElementById('confirmation');
 
-    fragments.forEach(fragment => {
-        const corruption = parseFloat(fragment.getAttribute('data-corruption')) || 0.3;
-        const content = fragment.querySelector('.fragment-desc');
-
-        if (content) {
-            setInterval(() => {
-                if (Math.random() < corruption) {
-                    corruptText(content, corruption);
-                }
-            }, 3000 + Math.random() * 2000);
-        }
-    });
-}
-
-// Access button reveal functionality
-const accessBtn = document.getElementById('accessBtn');
-const fragmentsSection = document.getElementById('fragments');
-const archiveSection = document.getElementById('archive');
-const inputSection = document.getElementById('input');
-
-let currentSection = 0;
-const sections = [fragmentsSection, archiveSection, inputSection];
-
-if (accessBtn) {
-    accessBtn.addEventListener('click', function() {
-        if (currentSection < sections.length) {
-            sections[currentSection].classList.remove('hidden');
-
-            // Scroll to the newly revealed section
-            setTimeout(() => {
-                sections[currentSection].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 100);
-
-            currentSection++;
-
-            // Change button text as we progress
-            if (currentSection === 1) {
-                this.querySelector('.btn-glitch').textContent = '[DECODE_LOGS]';
-                this.querySelector('.btn-glitch').setAttribute('data-text', '[DECODE_LOGS]');
-            } else if (currentSection === 2) {
-                this.querySelector('.btn-glitch').textContent = '[ESTABLISH_LINK]';
-                this.querySelector('.btn-glitch').setAttribute('data-text', '[ESTABLISH_LINK]');
-            } else if (currentSection >= 3) {
-                this.style.display = 'none';
-            }
-        }
-    });
-}
-
-// Form submission with creepy response
-const signalForm = document.getElementById('signalForm');
-const transmissionStatus = document.getElementById('status');
-
-if (signalForm) {
-    signalForm.addEventListener('submit', function(e) {
+if (form) {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Show the creepy status message
-        transmissionStatus.classList.remove('hidden');
+        // Show the contradictory confirmation
+        confirmation.classList.remove('hidden');
 
-        // Glitch out the form
-        const inputs = signalForm.querySelectorAll('.terminal-input');
-        inputs.forEach(input => {
-            input.disabled = true;
-            input.style.opacity = '0.3';
-        });
+        // Slowly fade out the form
+        setTimeout(() => {
+            form.style.transition = 'opacity 2s ease';
+            form.style.opacity = '0.3';
+        }, 1000);
 
-        // Hide submit button
-        const submitBtn = signalForm.querySelector('.terminal-submit');
-        if (submitBtn) {
-            submitBtn.style.display = 'none';
-        }
-
-        // Start intense glitching
-        startIntenseGlitch();
+        // Subtle text changes
+        setTimeout(() => {
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.disabled = true;
+                input.style.borderColor = 'var(--wrong)';
+            });
+        }, 2000);
     });
 }
 
-// Random glitch effects on page elements
-function randomGlitch() {
-    const glitchElements = document.querySelectorAll('.glitch-text');
+// Subtle card position shifts on scroll
+let lastScrollY = window.scrollY;
+const cards = document.querySelectorAll('.card');
 
-    glitchElements.forEach(el => {
-        if (Math.random() < 0.1) {
-            el.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
-            setTimeout(() => {
-                el.style.transform = 'translate(0, 0)';
-            }, 50);
-        }
+window.addEventListener('scroll', () => {
+    const scrollDiff = window.scrollY - lastScrollY;
+
+    cards.forEach((card, index) => {
+        const shift = scrollDiff * 0.02 * (index % 2 === 0 ? 1 : -1);
+        const currentTransform = card.style.transform || 'translateX(0px)';
+        const currentX = parseFloat(currentTransform.match(/-?\d+\.?\d*/)?.[0] || 0);
+        const newX = Math.max(-3, Math.min(3, currentX + shift * 0.1));
+
+        card.style.transform = `translateX(${newX}px)`;
     });
-}
 
-setInterval(randomGlitch, 2000);
-
-// Intense glitch effect after form submission
-function startIntenseGlitch() {
-    let glitchCount = 0;
-    const maxGlitches = 20;
-
-    const glitchInterval = setInterval(() => {
-        document.body.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
-
-        // Random color inversion
-        if (Math.random() < 0.3) {
-            document.body.style.filter = 'invert(1)';
-        } else {
-            document.body.style.filter = 'invert(0)';
-        }
-
-        glitchCount++;
-
-        if (glitchCount >= maxGlitches) {
-            clearInterval(glitchInterval);
-            document.body.style.transform = 'translate(0, 0)';
-            document.body.style.filter = 'invert(0)';
-        }
-    }, 100);
-}
-
-// Countdown timer with random numbers
-const countdownEl = document.getElementById('countdown');
-if (countdownEl) {
-    function updateCountdown() {
-        const randomTime = Math.floor(Math.random() * 999);
-        const randomUnit = ['SECONDS', 'CYCLES', 'MOMENTS', 'ERROR'][Math.floor(Math.random() * 4)];
-        countdownEl.textContent = `${randomTime} ${randomUnit}`;
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 2000);
-}
-
-// Random connection status updates
-const connectionStatus = document.querySelector('.connection-status');
-if (connectionStatus) {
-    const statuses = [
-        'DECRYPTING...',
-        'SIGNAL UNSTABLE',
-        'BREACH DETECTED',
-        'TRACING SOURCE',
-        'ERROR_0x4F3A',
-        'THEY KNOW',
-        'TEMPORAL ANOMALY'
-    ];
-
-    setInterval(() => {
-        connectionStatus.textContent = statuses[Math.floor(Math.random() * statuses.length)];
-    }, 4000);
-}
-
-// Randomly corrupt the static text
-const staticText = document.querySelector('.static-text');
-if (staticText) {
-    setInterval(() => {
-        let text = '';
-        const length = 32;
-        for (let i = 0; i < length; i++) {
-            text += ['█', '▓', '▒', '░'][Math.floor(Math.random() * 4)];
-        }
-        staticText.textContent = text;
-    }, 200);
-}
-
-// Binary data stream animation
-const dataStreams = document.querySelectorAll('.data-stream');
-dataStreams.forEach(stream => {
-    const originalData = stream.textContent;
-
-    setInterval(() => {
-        if (Math.random() < 0.3) {
-            // Randomly flip some bits
-            let binary = stream.textContent.split('');
-            const flipCount = Math.floor(Math.random() * 3) + 1;
-
-            for (let i = 0; i < flipCount; i++) {
-                const pos = Math.floor(Math.random() * binary.length);
-                if (binary[pos] === '0') binary[pos] = '1';
-                else if (binary[pos] === '1') binary[pos] = '0';
-            }
-
-            stream.textContent = binary.join('');
-
-            setTimeout(() => {
-                stream.textContent = originalData;
-            }, 500);
-        }
-    }, 2000);
+    lastScrollY = window.scrollY;
 });
 
-// Initialize corruption effects
-setTimeout(() => {
-    initFragmentCorruption();
-}, 1000);
+// Occasionally swap two random words in FAQs
+const faqAnswers = document.querySelectorAll('.answer');
 
-// Random screen shake
-function screenShake() {
-    if (Math.random() < 0.05) {
-        document.body.style.animation = 'shake 0.5s';
-        setTimeout(() => {
-            document.body.style.animation = '';
-        }, 500);
+function subtleTextCorruption() {
+    if (Math.random() < 0.2) {
+        const randomAnswer = faqAnswers[Math.floor(Math.random() * faqAnswers.length)];
+        const text = randomAnswer.textContent;
+        const words = text.split(' ');
+
+        if (words.length > 5) {
+            const i1 = Math.floor(Math.random() * words.length);
+            let i2 = Math.floor(Math.random() * words.length);
+            while (i2 === i1) {
+                i2 = Math.floor(Math.random() * words.length);
+            }
+
+            [words[i1], words[i2]] = [words[i2], words[i1]];
+            randomAnswer.textContent = words.join(' ');
+
+            // Restore after a moment
+            setTimeout(() => {
+                randomAnswer.textContent = text;
+            }, 3000);
+        }
     }
 }
 
-// Add shake animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translate(0, 0); }
-        10% { transform: translate(-2px, -2px); }
-        20% { transform: translate(2px, 2px); }
-        30% { transform: translate(-2px, 2px); }
-        40% { transform: translate(2px, -2px); }
-        50% { transform: translate(-2px, -2px); }
-        60% { transform: translate(2px, 2px); }
-        70% { transform: translate(-2px, 2px); }
-        80% { transform: translate(2px, -2px); }
-        90% { transform: translate(-2px, -2px); }
-    }
-`;
-document.head.appendChild(style);
+setInterval(subtleTextCorruption, 15000);
 
-setInterval(screenShake, 10000);
+// Very subtle breathing effect on notice
+const notice = document.querySelector('.notice');
+if (notice) {
+    let scale = 1;
+    let growing = true;
 
-// Mouse trail effect
+    setInterval(() => {
+        if (growing) {
+            scale += 0.0003;
+            if (scale >= 1.006) growing = false;
+        } else {
+            scale -= 0.0003;
+            if (scale <= 0.994) growing = true;
+        }
+        notice.style.transform = `scale(${scale})`;
+    }, 50);
+}
+
+// Track how long user has been on certain elements
+const trackElements = document.querySelectorAll('.card, .faq-item');
+const viewTimes = new Map();
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            if (!viewTimes.has(entry.target)) {
+                viewTimes.set(entry.target, Date.now());
+            }
+
+            // After viewing for too long, subtle change
+            setTimeout(() => {
+                if (document.body.contains(entry.target)) {
+                    entry.target.style.filter = 'brightness(0.98)';
+                }
+            }, 8000);
+        }
+    });
+}, { threshold: 0.5 });
+
+trackElements.forEach(el => observer.observe(el));
+
+// Mouse movement creates very subtle trails
+let mouseTrailTimeout;
 document.addEventListener('mousemove', (e) => {
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.05) {
         const trail = document.createElement('div');
         trail.style.cssText = `
             position: fixed;
             left: ${e.clientX}px;
             top: ${e.clientY}px;
-            width: 4px;
-            height: 4px;
-            background: #00ff41;
+            width: 2px;
+            height: 2px;
+            background: var(--wrong);
             pointer-events: none;
-            z-index: 9999;
-            opacity: 0.6;
-            box-shadow: 0 0 10px #00ff41;
+            border-radius: 50%;
+            opacity: 0.15;
+            transition: opacity 2s;
         `;
 
         document.body.appendChild(trail);
 
         setTimeout(() => {
-            trail.style.transition = 'opacity 0.5s';
             trail.style.opacity = '0';
-            setTimeout(() => trail.remove(), 500);
+            setTimeout(() => trail.remove(), 2000);
         }, 100);
     }
 });
 
-// Log typing effect
-const logWindow = document.querySelector('.log-window');
-if (logWindow) {
-    const lines = Array.from(logWindow.querySelectorAll('p'));
-    lines.forEach((line, index) => {
-        line.style.opacity = '0';
-        setTimeout(() => {
-            line.style.transition = 'opacity 0.5s';
-            line.style.opacity = '1';
-        }, index * 800);
-    });
+// Occasionally change a single letter in the heading
+const heading = document.querySelector('h1');
+if (heading) {
+    const originalText = heading.textContent;
+
+    setInterval(() => {
+        if (Math.random() < 0.15) {
+            const text = heading.textContent;
+            const pos = Math.floor(Math.random() * text.length);
+            const char = text[pos];
+
+            if (char !== ' ') {
+                const similar = {
+                    'a': 'á', 'e': 'é', 'i': 'í', 'o': 'ó', 'u': 'ú',
+                    'n': 'ñ', 'c': 'ç', 'y': 'ý', 's': 'š'
+                };
+
+                const newChar = similar[char.toLowerCase()] || char;
+                const newText = text.substring(0, pos) + newChar + text.substring(pos + 1);
+                heading.textContent = newText;
+
+                setTimeout(() => {
+                    heading.textContent = originalText;
+                }, 2000);
+            }
+        }
+    }, 10000);
 }
 
-// Easter egg: Konami code
-let konamiCode = [];
-const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+// Page title changes subtly
+const originalTitle = document.title;
+setInterval(() => {
+    if (Math.random() < 0.3) {
+        const titles = [
+            'Orientation Materials',
+            'Orientation Material',
+            'Orientation',
+            'Please Wait',
+            'Thank You',
+            originalTitle
+        ];
+        document.title = titles[Math.floor(Math.random() * titles.length)];
 
-document.addEventListener('keydown', (e) => {
-    konamiCode.push(e.key);
-    konamiCode = konamiCode.slice(-10);
-
-    if (konamiCode.join(',') === konamiSequence.join(',')) {
-        // Secret unlocked
-        document.body.style.filter = 'hue-rotate(180deg) saturate(2)';
-        alert('ADMIN ACCESS GRANTED\n\nJust kidding. But you found the secret :)');
         setTimeout(() => {
-            document.body.style.filter = '';
+            document.title = originalTitle;
         }, 5000);
     }
-});
+}, 20000);
 
-console.log('%c> SIGNAL ACQUIRED', 'color: #00ff41; font-size: 20px; font-family: monospace;');
-console.log('%c> You shouldn\'t be reading this', 'color: #ff0040; font-size: 14px; font-family: monospace;');
-console.log('%c> Or should you?', 'color: #008f11; font-size: 12px; font-family: monospace;');
+// Initialize everything
+setDate();
+updateVisitorCount();
+updateTimeElapsed();
+
+// Console message
+console.log('Welcome.');
+console.log('You have been here before.');
+
+// After some time, add subtle message
+setTimeout(() => {
+    console.log('This is normal.');
+}, 30000);
