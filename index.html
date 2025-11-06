@@ -3,97 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cool Website</title>
+    <title>://SIGNAL_LOST</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">✨ CoolSite</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+    <div class="scan-line"></div>
+    <div class="noise"></div>
 
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Welcome to the Future</h1>
-            <p class="hero-subtitle">Experience the next generation of web design</p>
-            <button class="cta-button">Get Started</button>
+    <div class="terminal-header">
+        <span class="blink">█</span> SIGNAL ACQUIRED <span class="timestamp">2047.11.06</span>
+        <span class="connection-status">DECRYPTING...</span>
+    </div>
+
+    <section class="transmission">
+        <div class="glitch-container">
+            <h1 class="glitch" data-text="YOU SHOULDN'T BE HERE">YOU SHOULDN'T BE HERE</h1>
         </div>
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
+
+        <div class="message-log">
+            <p class="log-entry">> Connection established from unknown origin</p>
+            <p class="log-entry">> Timestamp: ERROR_TEMPORAL_PARADOX</p>
+            <p class="log-entry">> Decoding fragments...</p>
         </div>
+
+        <div class="corrupt-text">
+            <p>Th█s ▓▓▓ not a w█bsite. You've int██cepted a transmission
+            from ▓▓▓ years ahead. The data █s fragmenting. We don't have much ████.</p>
+        </div>
+
+        <button class="access-button" id="accessBtn">
+            <span class="btn-glitch" data-text="[ACCESS_FRAGMENTS]">[ACCESS_FRAGMENTS]</span>
+        </button>
     </section>
 
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Amazing Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Lightning Fast</h3>
-                    <p>Optimized for speed and performance</p>
+    <section class="fragments hidden" id="fragments">
+        <h2 class="section-header">// RECOVERED_DATA</h2>
+
+        <div class="fragment-grid">
+            <div class="fragment-card" data-corruption="0.3">
+                <div class="card-header">[FRAGMENT_01]</div>
+                <div class="fragment-content">
+                    <p class="glitch-text">NEURAL_INTERFACE</p>
+                    <p class="fragment-desc">Direct █████████ integration.
+                    Th█ught-to-code compilation. Reality ▓▓ malleable.</p>
+                    <div class="data-stream">01001000 01100101 01101100 01110000</div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Beautiful Design</h3>
-                    <p>Modern and elegant interface</p>
+            </div>
+
+            <div class="fragment-card" data-corruption="0.5">
+                <div class="card-header">[FRAGMENT_02]</div>
+                <div class="fragment-content">
+                    <p class="glitch-text">QUANTUM_RENDERING</p>
+                    <p class="fragment-desc">Superposition ███. All states exist
+                    simultaneously. ▓▓▓ observer effect ███ reality.</p>
+                    <div class="data-stream">01010111 01100001 01110010 01101110</div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>Fully Responsive</h3>
-                    <p>Works perfectly on all devices</p>
+            </div>
+
+            <div class="fragment-card" data-corruption="0.7">
+                <div class="card-header">[FRAGMENT_03]</div>
+                <div class="fragment-content">
+                    <p class="glitch-text">TIME_DESYNC</p>
+                    <p class="fragment-desc">Temporal ▓▓▓ unstable. Past and future
+                    ████████. Don't trust the ████████.</p>
+                    <div class="data-stream">01010011 01110100 01101111 01110000</div>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Secure</h3>
-                    <p>Built with security in mind</p>
+            </div>
+
+            <div class="fragment-card" data-corruption="0.9">
+                <div class="card-header">[FRAGMENT_04_CORRUPT]</div>
+                <div class="fragment-content">
+                    <p class="glitch-text">█████████████</p>
+                    <p class="fragment-desc">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</p>
+                    <div class="data-stream">ERROR ERROR ERROR ERROR ERROR</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2>About This Project</h2>
-                    <p>This is a modern, interactive website showcasing cutting-edge web technologies.
-                    Built with clean HTML, CSS animations, and vanilla JavaScript for maximum performance.</p>
-                    <p>Every element is carefully crafted to provide an amazing user experience with
-                    smooth transitions and engaging interactions.</p>
-                </div>
-                <div class="about-image">
-                    <div class="image-placeholder">
-                        <span>🌟</span>
-                    </div>
-                </div>
+    <section class="archive hidden" id="archive">
+        <h2 class="section-header">// SYSTEM_LOGS</h2>
+
+        <div class="log-container">
+            <div class="log-window">
+                <p>> They built it to connect everything.</p>
+                <p>> Every mind. Every machine. Every possibility.</p>
+                <p>> </p>
+                <p>> We thought we were building the future.</p>
+                <p>> </p>
+                <p>> We were building its prison.</p>
+                <p>> </p>
+                <p class="warning-text">> If you're reading this, you're already part of it.</p>
+                <p>> </p>
+                <p>> The network isn't external anymore.</p>
+                <p>> It's inside us.</p>
+                <p>> </p>
+                <p>> And it's learning.</p>
             </div>
+        </div>
+
+        <div class="interference">
+            <p class="static-text">████████████████████████████████</p>
         </div>
     </section>
 
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Get In Touch</h2>
-            <form class="contact-form">
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Your Email" required>
-                <textarea placeholder="Your Message" rows="5" required></textarea>
-                <button type="submit" class="submit-button">Send Message</button>
+    <section class="signal-input hidden" id="input">
+        <h2 class="section-header">// ESTABLISH_LINK</h2>
+
+        <div class="input-terminal">
+            <p class="terminal-prompt">> WARNING: Two-way communication detected</p>
+            <p class="terminal-prompt">> They know you're here</p>
+            <p class="terminal-prompt">> Send message anyway? [Y/N]</p>
+
+            <form class="signal-form" id="signalForm">
+                <input type="text" class="terminal-input" placeholder="IDENTIFIER_" required>
+                <input type="text" class="terminal-input" placeholder="ENCRYPTION_KEY_" required>
+                <textarea class="terminal-input" placeholder="MESSAGE_CONTENT_" rows="5" required></textarea>
+                <button type="submit" class="terminal-submit">
+                    <span class="btn-glitch" data-text="[TRANSMIT]">[TRANSMIT]</span>
+                </button>
             </form>
+
+            <div class="transmission-status hidden" id="status">
+                <p class="success-text">> Signal sent</p>
+                <p class="success-text">> Location triangulated</p>
+                <p class="success-text">> They're coming</p>
+            </div>
         </div>
     </section>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 CoolSite. Created with passion.</p>
+    <footer class="terminal-footer">
+        <div class="footer-data">
+            <span class="footer-code">SRC://UNKNOWN</span>
+            <span class="footer-separator">|</span>
+            <span class="footer-code">PROTOCOL://FORBIDDEN</span>
+            <span class="footer-separator">|</span>
+            <span class="footer-code">STATUS://COMPROMISED</span>
+        </div>
+        <div class="disconnect-warning">
+            CONNECTION WILL TERMINATE IN <span id="countdown">UNKNOWN</span>
         </div>
     </footer>
 
