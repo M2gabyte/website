@@ -3,61 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calm</title>
+    <title>NEXUS - The Future is Here</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Take a breath</h1>
-            <p class="subtitle">Let's examine that thought together</p>
-        </header>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">NEXUS</div>
+            <div class="nav-links">
+                <a href="#features">Technology</a>
+                <a href="#specs">Specs</a>
+                <a href="#order">Order</a>
+            </div>
+        </div>
+    </nav>
 
-        <div class="status" id="status">
-            <span class="status-indicator"></span>
-            <span id="statusText">Loading...</span>
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hero-line">The next evolution</span>
+                <span class="hero-line">of humanity</span>
+            </h1>
+            <p class="hero-subtitle">NEXUS-7 Humanoid Robot. Available 2025.</p>
+            <button class="cta">Reserve Now — $499 Deposit</button>
+        </div>
+        <div class="hero-visual">
+            <div class="robot-silhouette"></div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <section class="statement">
+        <div class="statement-content">
+            <h2>We built a machine that thinks, moves, and adapts like you do.</h2>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="feature">
+            <div class="feature-number">01</div>
+            <div class="feature-content">
+                <h3>Neural Architecture</h3>
+                <p>Advanced AI processing with 100 trillion synaptic connections. Learns and adapts in real-time.</p>
+            </div>
         </div>
 
-        <main>
-            <div class="input-section">
-                <label for="worry">What's worrying you?</label>
-                <textarea
-                    id="worry"
-                    placeholder="I'm worried that..."
-                    rows="6"
-                ></textarea>
-
-                <button id="analyzeBtn" class="btn-primary" disabled>
-                    Help me see this clearly
-                </button>
+        <div class="feature feature-reverse">
+            <div class="feature-number">02</div>
+            <div class="feature-content">
+                <h3>Biomimetic Movement</h3>
+                <p>40 degrees of freedom. Natural, fluid motion indistinguishable from human movement.</p>
             </div>
+        </div>
 
-            <div class="output-section" id="outputSection" style="display: none;">
-                <div class="distortion-badge" id="distortionBadge"></div>
+        <div class="feature">
+            <div class="feature-number">03</div>
+            <div class="feature-content">
+                <h3>Adaptive Intelligence</h3>
+                <p>Understands context, emotion, and nuance. Responds to voice, gesture, and intention.</p>
+            </div>
+        </div>
 
-                <div class="response-card">
-                    <h3>Let's reframe this</h3>
-                    <div id="response" class="response-text"></div>
+        <div class="feature feature-reverse">
+            <div class="feature-number">04</div>
+            <div class="feature-content">
+                <h3>Autonomous Operation</h3>
+                <p>72-hour battery life. Self-charging. Operates independently or responds to commands.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="specs" class="specs">
+        <h2 class="specs-title">Technical Specifications</h2>
+        <div class="specs-grid">
+            <div class="spec-item">
+                <div class="spec-label">Height</div>
+                <div class="spec-value">180cm</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Weight</div>
+                <div class="spec-value">68kg</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Processing</div>
+                <div class="spec-value">500 TOPS</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Battery</div>
+                <div class="spec-value">72hrs</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Vision</div>
+                <div class="spec-value">8K Stereo</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Sensors</div>
+                <div class="spec-value">200+</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="order" class="order">
+        <div class="order-content">
+            <h2>Reserve Your NEXUS-7</h2>
+            <p class="order-subtitle">Limited production run. Delivery begins Q2 2025.</p>
+
+            <div class="price-card">
+                <div class="price">$89,999</div>
+                <div class="price-details">
+                    <p>$499 fully refundable deposit</p>
+                    <p>Final payment upon delivery</p>
                 </div>
-
-                <button id="saveBtn" class="btn-secondary">
-                    Save this reframe
-                </button>
+                <button class="order-btn">Reserve Now</button>
             </div>
 
-            <div class="journal-section">
-                <h2>Your Progress</h2>
-                <div id="journalList" class="journal-list">
-                    <p class="empty-state">Your reframed thoughts will appear here</p>
-                </div>
+            <div class="order-info">
+                <p>Includes 5-year warranty, lifetime software updates, and 24/7 support.</p>
             </div>
-        </main>
+        </div>
+    </section>
 
-        <footer>
-            <p>Everything stays on your device. Take your time.</p>
-        </footer>
-    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">NEXUS</div>
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
 
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
