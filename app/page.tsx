@@ -101,65 +101,117 @@ export default function Home() {
 
         {/* Results */}
         {result && !loading && (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-gray-100">
-              🔍 Search Results
-            </h2>
+          <div className="space-y-6">
+            {/* Status Alert */}
+            {(() => {
+              const hasBedbugs = result.summary.toLowerCase().includes('bedbug report') ||
+                                 result.summary.toLowerCase().includes('bedbug') ||
+                                 result.summary.match(/documented.*bedbug/i);
+              const isClean = result.summary.toLowerCase().includes('no bedbug') ||
+                             result.summary.toLowerCase().includes('no reports') ||
+                             result.summary.toLowerCase().includes('no subsequent reports');
 
-            <div className="mb-8">
-              <div className="text-gray-900 leading-relaxed space-y-4">
-                {result.summary.split(/\*\*\d+\.\s+/).filter(Boolean).map((section, idx) => {
-                  // Extract section title and content
-                  const titleMatch = section.match(/^([^:]+):\*\*/);
-                  const title = titleMatch ? titleMatch[1].trim() : null;
-                  const content = title
-                    ? section.replace(/^([^:]+):\*\*/, '').trim()
-                    : section.trim();
-
-                  return (
-                    <div key={idx} className="space-y-2">
-                      {title && (
-                        <h3 className="font-bold text-lg text-gray-900">
-                          {idx + 1}. {title}
+              if (hasBedbugs) {
+                return (
+                  <div className="bg-red-50 border-4 border-red-500 rounded-2xl p-6 shadow-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-red-500 rounded-full p-4 flex-shrink-0">
+                        <span className="text-4xl">⚠️</span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-red-900 mb-1">
+                          Bedbug Reports Found
                         </h3>
-                      )}
-                      <p className="text-base text-gray-700 leading-relaxed pl-6">
-                        {content}
-                      </p>
+                        <p className="text-red-700">
+                          This location has documented bedbug mentions. Review details below.
+                        </p>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                  </div>
+                );
+              } else if (isClean) {
+                return (
+                  <div className="bg-green-50 border-4 border-green-500 rounded-2xl p-6 shadow-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-green-500 rounded-full p-4 flex-shrink-0">
+                        <span className="text-4xl">✅</span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-green-900 mb-1">
+                          No Recent Reports
+                        </h3>
+                        <p className="text-green-700">
+                          No bedbug reports found in recent searches.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
-            {result.sources && result.sources.length > 0 && (
-              <div className="mt-8 pt-6 border-t-2 border-gray-100">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  📚 Sources ({result.sources.length})
-                </h3>
-                <div className="grid gap-3">
-                  {result.sources.map((source, index) => (
-                    <a
-                      key={index}
-                      href={source}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-start gap-3 p-4 bg-orange-50 hover:bg-orange-100 rounded-lg border border-orange-200 hover:border-orange-300 transition-all group"
-                    >
-                      <span className="text-orange-600 font-semibold text-sm mt-0.5">
-                        {index + 1}.
-                      </span>
-                      <span className="text-sm text-gray-700 group-hover:text-orange-700 break-all flex-1">
-                        {source}
-                      </span>
-                      <span className="text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                        →
-                      </span>
-                    </a>
-                  ))}
+            {/* Detailed Results */}
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-gray-100">
+                📋 Detailed Summary
+              </h2>
+
+              <div className="mb-8">
+                <div className="text-gray-900 leading-relaxed space-y-6">
+                  {result.summary.split(/\*\*\d+\.\s+/).filter(Boolean).map((section, idx) => {
+                    // Extract section title and content
+                    const titleMatch = section.match(/^([^:]+):\*\*/);
+                    const title = titleMatch ? titleMatch[1].trim() : null;
+                    const content = title
+                      ? section.replace(/^([^:]+):\*\*/, '').trim()
+                      : section.trim();
+
+                    return (
+                      <div key={idx} className="bg-gray-50 rounded-lg p-5 border-l-4 border-orange-500">
+                        {title && (
+                          <h3 className="font-bold text-xl text-gray-900 mb-3">
+                            {title}
+                          </h3>
+                        )}
+                        <p className="text-base text-gray-700 leading-relaxed">
+                          {content}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            )}
+
+              {result.sources && result.sources.length > 0 && (
+                <div className="mt-8 pt-6 border-t-2 border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    📚 Sources ({result.sources.length})
+                  </h3>
+                  <div className="grid gap-3">
+                    {result.sources.map((source, index) => (
+                      <a
+                        key={index}
+                        href={source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-3 p-4 bg-orange-50 hover:bg-orange-100 rounded-lg border border-orange-200 hover:border-orange-300 transition-all group"
+                      >
+                        <span className="text-orange-600 font-semibold text-sm mt-0.5">
+                          {index + 1}.
+                        </span>
+                        <span className="text-sm text-gray-700 group-hover:text-orange-700 break-all flex-1">
+                          {source}
+                        </span>
+                        <span className="text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                          →
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
