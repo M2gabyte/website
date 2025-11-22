@@ -26,23 +26,28 @@ export async function POST(request: NextRequest) {
     // Create a search prompt for OpenAI
     const searchPrompt = `Search the web for bedbug reports, complaints, or mentions related to: "${query}"
 
-Please search across multiple sources including:
-- TripAdvisor reviews
-- Yelp reviews
-- Google reviews
-- Reddit discussions
-- Bedbug registry websites
-- News articles
-- Hotel review sites
+Please search across multiple sources including TripAdvisor, Yelp, Google Reviews, Reddit, bedbug registries, news articles, and hotel review sites.
 
-Provide a comprehensive summary that includes:
-1. Whether there are any bedbug reports or mentions
-2. How recent the reports are
-3. Severity and frequency of reports
-4. Any patterns or trends
-5. Overall assessment
+IMPORTANT: Format your response using clean, simple markdown:
+- Use ## for main section headings (like "## Bedbug Reports Found" or "## No Reports Found")
+- Use regular paragraphs for explanations
+- Use bullet points (-) for lists
+- Keep formatting simple and readable
 
-Format the response clearly and cite your sources.`;
+Structure your response with these sections:
+## Summary
+A brief overview of what you found (2-3 sentences)
+
+## Details
+- Specific reports or mentions found
+- Dates of reports
+- Severity of incidents
+- Patterns or trends
+
+## Recommendation
+What travelers should know
+
+Do NOT include URLs in the main text - they will be extracted separately.`;
 
     // Call OpenAI with web search enabled
     const completion = await openai.chat.completions.create({
@@ -50,7 +55,7 @@ Format the response clearly and cite your sources.`;
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful assistant that searches the web for bedbug reports and provides accurate, well-sourced summaries. Always cite your sources with URLs.'
+          content: 'You are a bedbug report search assistant. Provide clear, well-formatted markdown summaries. Use ## for headings, regular paragraphs, and bullet points. Keep formatting clean and simple.'
         },
         {
           role: 'user',
