@@ -80,9 +80,11 @@ Do NOT include URLs in the main text - they will be extracted separately.`;
     // Remove inline URLs
     cleanSummary = cleanSummary.replace(/https?:\/\/[^\s\)]+/g, '');
 
-    // Clean up extra parentheses and whitespace
+    // Clean up extra parentheses
     cleanSummary = cleanSummary.replace(/\(\s*\)/g, '');
-    cleanSummary = cleanSummary.replace(/\s+/g, ' ');
+
+    // Clean up multiple spaces on the same line (but preserve newlines for markdown)
+    cleanSummary = cleanSummary.replace(/ +/g, ' ');
     cleanSummary = cleanSummary.trim();
 
     return NextResponse.json({
