@@ -71,10 +71,11 @@ Format the response clearly and cite your sources.`;
       sources: [...new Set(sources)], // Remove duplicates
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Search error:', error);
+    const errorMessage = error?.message || error?.error?.message || 'Failed to perform search';
     return NextResponse.json(
-      { error: 'Failed to perform search' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
