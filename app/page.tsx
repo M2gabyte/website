@@ -107,12 +107,28 @@ export default function Home() {
             </h2>
 
             <div className="mb-8">
-              <div className="text-gray-900 text-lg leading-relaxed space-y-4">
-                {result.summary.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-base">
-                    {paragraph}
-                  </p>
-                ))}
+              <div className="text-gray-900 leading-relaxed space-y-4">
+                {result.summary.split(/\*\*\d+\.\s+/).filter(Boolean).map((section, idx) => {
+                  // Extract section title and content
+                  const titleMatch = section.match(/^([^:]+):\*\*/);
+                  const title = titleMatch ? titleMatch[1].trim() : null;
+                  const content = title
+                    ? section.replace(/^([^:]+):\*\*/, '').trim()
+                    : section.trim();
+
+                  return (
+                    <div key={idx} className="space-y-2">
+                      {title && (
+                        <h3 className="font-bold text-lg text-gray-900">
+                          {idx + 1}. {title}
+                        </h3>
+                      )}
+                      <p className="text-base text-gray-700 leading-relaxed pl-6">
+                        {content}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
