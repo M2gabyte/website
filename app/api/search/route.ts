@@ -57,8 +57,8 @@ Format the response clearly and cite your sources.`;
           content: searchPrompt
         }
       ],
-      tools: [{ type: 'web_search_preview' }],
-    });
+      web_search_options: {},
+    } as any);
 
     const summary = completion.choices[0]?.message?.content || 'No results found';
 
