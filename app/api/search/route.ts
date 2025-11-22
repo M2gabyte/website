@@ -26,28 +26,27 @@ export async function POST(request: NextRequest) {
     // Create a search prompt for OpenAI
     const searchPrompt = `Search the web for bedbug reports, complaints, or mentions related to: "${query}"
 
-Please search across multiple sources including TripAdvisor, Yelp, Google Reviews, Reddit, bedbug registries, news articles, and hotel review sites.
+Search across TripAdvisor, Yelp, Google Reviews, Reddit, bedbug registries, news articles, and hotel review sites.
 
-IMPORTANT: Format your response using clean, simple markdown:
-- Use ## for main section headings (like "## Bedbug Reports Found" or "## No Reports Found")
-- Use regular paragraphs for explanations
-- Use bullet points (-) for lists
-- Keep formatting simple and readable
+Provide a clear, easy-to-read summary with these sections (use ## for headings):
 
-Structure your response with these sections:
 ## Summary
-A brief overview of what you found (2-3 sentences)
+Brief 2-3 sentence overview of what you found.
 
-## Details
-- Specific reports or mentions found
-- Dates of reports
-- Severity of incidents
-- Patterns or trends
+## Key Findings
+Write short paragraphs covering:
+- What reports or mentions were found (with specific dates)
+- How severe the incidents were
+- Whether this appears to be an ongoing issue or isolated incident
 
 ## Recommendation
-What travelers should know
+One paragraph with practical advice for travelers.
 
-Do NOT include URLs in the main text - they will be extracted separately.`;
+FORMATTING RULES:
+- Use ## for section headings only
+- Write in clear paragraphs (no bullet points)
+- Do NOT include URLs in the text
+- Keep it concise and readable`;
 
     // Call OpenAI with web search enabled
     const completion = await openai.chat.completions.create({
@@ -55,7 +54,7 @@ Do NOT include URLs in the main text - they will be extracted separately.`;
       messages: [
         {
           role: 'system',
-          content: 'You are a bedbug report search assistant. Provide clear, well-formatted markdown summaries. Use ## for headings, regular paragraphs, and bullet points. Keep formatting clean and simple.'
+          content: 'You are a bedbug report search assistant. Write clear summaries using ONLY ## headings and regular paragraphs. Do not use bullet points, numbered lists, or bold text within paragraphs. Keep it simple and readable.'
         },
         {
           role: 'user',
