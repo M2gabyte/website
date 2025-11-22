@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
 Find information from TripAdvisor, Yelp, Google Reviews, Reddit, and bedbug registries.
 
-Provide a response in this EXACT format with these three sections:
+Provide a response in this EXACT format with these sections:
 
 SUMMARY: Write 2-3 sentences about what you found overall.
 
@@ -36,7 +36,12 @@ FINDINGS: Write 3-4 sentences covering: specific incidents with dates, how sever
 
 ADVICE: Write 2-3 sentences with practical recommendations for travelers.
 
-CRITICAL: Use ONLY plain text paragraphs separated by blank lines. NO markdown, NO bullets, NO special formatting, NO URLs in the text.`;
+INCIDENTS: List each documented incident on a new line in this format:
+DATE: [date in format like "Oct 12, 2023" or "March 2022"] | SOURCE: [source name like "TripAdvisor" or "Reddit"] | SNIPPET: [one sentence quote or description of what was found]
+
+If you find multiple incidents, list them all. If you find no specific dated incidents, write "None found".
+
+CRITICAL: Use ONLY plain text. NO markdown, NO bullets, NO special formatting, NO URLs in the text.`;
 
     // Call OpenAI with web search enabled
     const completion = await openai.chat.completions.create({
@@ -76,9 +81,54 @@ CRITICAL: Use ONLY plain text paragraphs separated by blank lines. NO markdown, 
     cleanSummary = cleanSummary.replace(/ +/g, ' ');
     cleanSummary = cleanSummary.trim();
 
+    // Extract incidents from the response
+    const incidents: Array<{ date: string; source: string; snippet: string; timestamp?: number }> = [];
+    const incidentsMatch = cleanSummary.match(/INCIDENTS:(.+?)(?=\n\n|$)/s);
+
+    if (incidentsMatch && !incidentsMatch[1].includes('None found')) {
+      const incidentLines = incidentsMatch[1].trim().split('\n').filter(line => line.trim());
+
+      for (const line of incidentLines) {
+        const dateMatch = line.match(/DATE:\s*([^|]+)/);
+        const sourceMatch = line.match(/SOURCE:\s*([^|]+)/);
+        const snippetMatch = line.match(/SNIPPET:\s*(.+)/);
+
+        if (dateMatch && sourceMatch && snippetMatch) {
+          const dateStr = dateMatch[1].trim();
+          const source = sourceMatch[1].trim();
+          const snippet = snippetMatch[1].trim();
+
+          // Try to parse the date to get a timestamp for sorting
+          let timestamp: number | undefined;
+          try {
+            const parsedDate = new Date(dateStr);
+            if (!isNaN(parsedDate.getTime())) {
+              timestamp = parsedDate.getTime();
+            }
+          } catch (e) {
+            // If parsing fails, we'll still include the incident without a timestamp
+          }
+
+          incidents.push({ date: dateStr, source, snippet, timestamp });
+        }
+      }
+    }
+
+    // Sort incidents by timestamp (oldest first)
+    incidents.sort((a, b) => {
+      if (a.timestamp && b.timestamp) return a.timestamp - b.timestamp;
+      if (a.timestamp) return -1;
+      if (b.timestamp) return 1;
+      return 0;
+    });
+
+    // Remove INCIDENTS section from the summary for display
+    let displaySummary = cleanSummary.replace(/INCIDENTS:.+?(?=\n\n|$)/s, '').trim();
+
     return NextResponse.json({
-      summary: cleanSummary,
+      summary: displaySummary,
       sources: [...new Set(sources)], // Remove duplicates
+      incidents: incidents.length > 0 ? incidents : undefined,
     });
 
   } catch (error: any) {

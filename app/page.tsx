@@ -2,9 +2,17 @@
 
 import { useState, useRef, useEffect } from 'react';
 
+interface Incident {
+  date: string;
+  source: string;
+  snippet: string;
+  timestamp?: number;
+}
+
 interface SearchResult {
   summary: string;
   sources: string[];
+  incidents?: Incident[];
 }
 
 export default function Home() {
@@ -204,6 +212,143 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-slate-800 mb-6">
                 Detailed Summary
               </h2>
+
+              {/* Forensic Timeline */}
+              {result.incidents && result.incidents.length > 0 && (
+                <div className="mb-8 p-6 bg-slate-50 rounded-lg border border-slate-200">
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">Forensic Timeline</h3>
+
+                  <div className="relative pt-8 pb-4">
+                    {/* Timeline container */}
+                    <div className="relative">
+                      {/* Base timeline line */}
+                      <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-300 -translate-y-1/2"></div>
+
+                      {/* Year markers */}
+                      <div className="relative flex justify-between mb-12">
+                        {(() => {
+                          const currentYear = new Date().getFullYear();
+                          const years = Array.from({ length: 7 }, (_, i) => currentYear - 6 + i);
+
+                          return years.map((year, index) => (
+                            <div key={year} className="flex flex-col items-center" style={{ width: `${100 / 7}%` }}>
+                              <div className="w-2 h-2 bg-slate-400 rounded-full mb-2"></div>
+                              <span className="text-xs text-slate-500 font-medium">{year}</span>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+
+                      {/* Incidents plotted on timeline */}
+                      <div className="absolute top-0 left-0 right-0" style={{ height: '48px' }}>
+                        {(() => {
+                          const currentYear = new Date().getFullYear();
+                          const startDate = new Date(currentYear - 6, 0, 1).getTime();
+                          const endDate = new Date(currentYear, 11, 31).getTime();
+                          const totalDuration = endDate - startDate;
+
+                          // Group incidents by month to detect clusters
+                          const incidentsByMonth = new Map<string, Incident[]>();
+                          result.incidents.forEach(incident => {
+                            if (incident.timestamp) {
+                              const date = new Date(incident.timestamp);
+                              const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+                              if (!incidentsByMonth.has(monthKey)) {
+                                incidentsByMonth.set(monthKey, []);
+                              }
+                              incidentsByMonth.get(monthKey)!.push(incident);
+                            }
+                          });
+
+                          // Render clusters and individual incidents
+                          const renderedMonths = new Set<string>();
+
+                          return result.incidents.map((incident, index) => {
+                            if (!incident.timestamp) return null;
+
+                            const date = new Date(incident.timestamp);
+                            const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+
+                            // Skip if we already rendered this month's cluster
+                            if (renderedMonths.has(monthKey)) return null;
+                            renderedMonths.add(monthKey);
+
+                            const incidentsInMonth = incidentsByMonth.get(monthKey) || [];
+                            const isCluster = incidentsInMonth.length > 1;
+
+                            // Calculate position (0-100%)
+                            const position = ((incident.timestamp - startDate) / totalDuration) * 100;
+
+                            return (
+                              <div
+                                key={`${monthKey}-${index}`}
+                                className="absolute group"
+                                style={{ left: `${Math.max(2, Math.min(98, position))}%`, top: '50%', transform: 'translate(-50%, -50%)' }}
+                              >
+                                {/* Incident marker */}
+                                {isCluster ? (
+                                  <div className="relative">
+                                    <div className="w-6 h-6 bg-red-500 rounded-full animate-pulse shadow-lg"></div>
+                                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-xs flex items-center justify-center rounded-full font-bold">
+                                      {incidentsInMonth.length}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="w-3 h-3 bg-red-500 rounded-full shadow-md"></div>
+                                )}
+
+                                {/* Tooltip on hover */}
+                                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                  <div className="bg-slate-900 text-white text-xs rounded-lg p-3 shadow-xl whitespace-nowrap max-w-xs" style={{ minWidth: '250px' }}>
+                                    {isCluster ? (
+                                      <div className="space-y-2">
+                                        <div className="font-bold text-red-300 border-b border-slate-700 pb-1 mb-2">
+                                          {incidentsInMonth.length} reports in {date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                        </div>
+                                        {incidentsInMonth.map((inc, i) => (
+                                          <div key={i} className="border-l-2 border-red-400 pl-2">
+                                            <div className="font-semibold">{inc.date}</div>
+                                            <div className="text-slate-400 text-xs">{inc.source}</div>
+                                            <div className="text-slate-300 mt-1 whitespace-normal">{inc.snippet}</div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <div className="font-semibold">{incident.date}</div>
+                                        <div className="text-slate-400 text-xs mb-1">{incident.source}</div>
+                                        <div className="text-slate-300 whitespace-normal">{incident.snippet}</div>
+                                      </div>
+                                    )}
+                                    {/* Tooltip arrow */}
+                                    <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-900"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* Legend */}
+                    <div className="mt-16 pt-4 border-t border-slate-200 flex items-center justify-center gap-6 text-xs text-slate-600">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span>Single Report</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">2+</div>
+                        <span>Outbreak (Multiple Reports)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-0.5 bg-slate-300"></div>
+                        <span>No Data</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-6">
                 {(() => {
