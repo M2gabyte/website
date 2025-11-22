@@ -24,29 +24,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Create a search prompt for OpenAI
-    const searchPrompt = `Search the web for bedbug reports, complaints, or mentions related to: "${query}"
+    const searchPrompt = `Search the web for bedbug reports for: "${query}"
 
-Search across TripAdvisor, Yelp, Google Reviews, Reddit, bedbug registries, news articles, and hotel review sites.
+Find information from TripAdvisor, Yelp, Google Reviews, Reddit, and bedbug registries.
 
-Provide a clear, easy-to-read summary with these sections (use ## for headings):
+Provide a response in this EXACT format with these three sections:
 
-## Summary
-Brief 2-3 sentence overview of what you found.
+SUMMARY: Write 2-3 sentences about what you found overall.
 
-## Key Findings
-Write short paragraphs covering:
-- What reports or mentions were found (with specific dates)
-- How severe the incidents were
-- Whether this appears to be an ongoing issue or isolated incident
+FINDINGS: Write 3-4 sentences covering: specific incidents with dates, how severe they were, and whether this seems ongoing or isolated.
 
-## Recommendation
-One paragraph with practical advice for travelers.
+ADVICE: Write 2-3 sentences with practical recommendations for travelers.
 
-FORMATTING RULES:
-- Use ## for section headings only
-- Write in clear paragraphs (no bullet points)
-- Do NOT include URLs in the text
-- Keep it concise and readable`;
+CRITICAL: Use ONLY plain text paragraphs separated by blank lines. NO markdown, NO bullets, NO special formatting, NO URLs in the text.`;
 
     // Call OpenAI with web search enabled
     const completion = await openai.chat.completions.create({
@@ -54,7 +44,7 @@ FORMATTING RULES:
       messages: [
         {
           role: 'system',
-          content: 'You are a bedbug report search assistant. Write clear summaries using ONLY ## headings and regular paragraphs. Do not use bullet points, numbered lists, or bold text within paragraphs. Keep it simple and readable.'
+          content: 'You provide plain text summaries. Write in simple paragraphs only. Never use markdown, bullets, bold, or special characters. Just plain sentences.'
         },
         {
           role: 'user',
