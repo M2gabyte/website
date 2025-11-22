@@ -46,7 +46,7 @@ Format the response clearly and cite your sources.`;
 
     // Call OpenAI with web search enabled
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4o-search-preview',
       messages: [
         {
           role: 'system',
@@ -57,8 +57,7 @@ Format the response clearly and cite your sources.`;
           content: searchPrompt
         }
       ],
-      // Note: Web search capabilities depend on your OpenAI plan
-      // This uses the standard chat completion API
+      tools: [{ type: 'web_search_preview' }],
     });
 
     const summary = completion.choices[0]?.message?.content || 'No results found';
