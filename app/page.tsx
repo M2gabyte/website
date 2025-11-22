@@ -65,7 +65,10 @@ export default function Home() {
             <input
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setError(null); // Clear error when typing
+              }}
               placeholder="e.g., Hilton New York Times Square"
               className="flex-1 px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all"
               disabled={loading}
