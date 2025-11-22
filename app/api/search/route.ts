@@ -60,14 +60,28 @@ Format the response clearly and cite your sources.`;
       web_search_options: {},
     } as any);
 
-    const summary = completion.choices[0]?.message?.content || 'No results found';
+    const rawSummary = completion.choices[0]?.message?.content || 'No results found';
 
-    // Extract URLs from the response (basic extraction)
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const sources = summary.match(urlRegex) || [];
+    // Extract URLs from the response
+    const urlRegex = /(https?:\/\/[^\s\)]+)/g;
+    const sources = rawSummary.match(urlRegex) || [];
+
+    // Clean up the summary by removing URLs and parenthetical source citations
+    let cleanSummary = rawSummary;
+
+    // Remove parenthetical citations like ([source.com](url))
+    cleanSummary = cleanSummary.replace(/\(\[?[^\]]*\]?\([^)]+\)\)/g, '');
+
+    // Remove inline URLs
+    cleanSummary = cleanSummary.replace(/https?:\/\/[^\s\)]+/g, '');
+
+    // Clean up extra parentheses and whitespace
+    cleanSummary = cleanSummary.replace(/\(\s*\)/g, '');
+    cleanSummary = cleanSummary.replace(/\s+/g, ' ');
+    cleanSummary = cleanSummary.trim();
 
     return NextResponse.json({
-      summary,
+      summary: cleanSummary,
       sources: [...new Set(sources)], // Remove duplicates
     });
 

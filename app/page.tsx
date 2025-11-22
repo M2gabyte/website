@@ -70,7 +70,7 @@ export default function Home() {
                 setError(null); // Clear error when typing
               }}
               placeholder="e.g., Hilton New York Times Square"
-              className="flex-1 px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all"
+              className="flex-1 px-6 py-4 text-lg text-gray-900 placeholder:text-gray-400 border-2 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition-all bg-white"
               disabled={loading}
             />
             <button
@@ -102,35 +102,46 @@ export default function Home() {
         {/* Results */}
         {result && !loading && (
           <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Search Results
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-gray-100">
+              🔍 Search Results
             </h2>
 
-            <div className="prose max-w-none mb-6">
-              <div className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                {result.summary}
+            <div className="mb-8">
+              <div className="text-gray-900 text-lg leading-relaxed space-y-4">
+                {result.summary.split('\n\n').map((paragraph, idx) => (
+                  <p key={idx} className="text-base">
+                    {paragraph}
+                  </p>
+                ))}
               </div>
             </div>
 
             {result.sources && result.sources.length > 0 && (
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Sources:
+              <div className="mt-8 pt-6 border-t-2 border-gray-100">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  📚 Sources ({result.sources.length})
                 </h3>
-                <ul className="space-y-2">
+                <div className="grid gap-3">
                   {result.sources.map((source, index) => (
-                    <li key={index} className="text-sm text-gray-600">
-                      <a
-                        href={source}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-orange-600 hover:text-orange-700 hover:underline break-all"
-                      >
+                    <a
+                      key={index}
+                      href={source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-3 p-4 bg-orange-50 hover:bg-orange-100 rounded-lg border border-orange-200 hover:border-orange-300 transition-all group"
+                    >
+                      <span className="text-orange-600 font-semibold text-sm mt-0.5">
+                        {index + 1}.
+                      </span>
+                      <span className="text-sm text-gray-700 group-hover:text-orange-700 break-all flex-1">
                         {source}
-                      </a>
-                    </li>
+                      </span>
+                      <span className="text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        →
+                      </span>
+                    </a>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
           </div>
